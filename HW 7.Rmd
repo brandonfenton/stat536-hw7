@@ -136,20 +136,27 @@ In the table above, describing the fits of the 12 models considered, we see that
 2) Now fit a `gam` from the `mgcv` package that includes a long-term trend based on a thin-plate spline with shrinkage that uses `k = #years, bs = "ts"` from the fractional year variable and a cyclic spline seasonal component. To build the cyclic spline component, use the numerically coded month variable that goes from 1 to 12 and `k = 12,bs = "cc"`. Fit the model, plot the long-term trend and the seasonal component (use `plot(gam_model)`), and discuss the estimated components, using both the plots and the EDF of each term.
 
 ```{r p2}
+
 ym_gam <- gam(value ~ s(time(BRW_flask), k=43, bs="ts")
-                    + s(time(cycle(BRW_flask)), k=12, bs="cc"), data=BRW_flask)
+                    + s(cycle(BRW_flask), k=12, bs="cc"), data=BRW_flask)
+
+par(mfrow=c(1,2))
 plot(ym_gam)
+par(mfrow=c(1,1))
 ```
 
 3) Calculate the AIC of the GAM using the `AIC` function and discuss how that result compares to your AICs in #1. How is it similar or different in terms of information (degrees of freedom) used?
 
 ```{r p3}
-
+AIC(ym_gam)
 ```
 
 4) Compare the fitted values of your GAM to those from your top model, plotting the two models's results and the responses vs time on the same plot.
 
 ```{r p4}
+plot(BRW_flask[,4])
+lines(fitted(ym_lm12) ~ as.vector(time(BRW_flask)), col="red")
+lines(fitted(ym_gam) ~ as.vector(time(BRW_flask)), col="blue")
 ```
 
 ## A simulation study with autocorrelation present
