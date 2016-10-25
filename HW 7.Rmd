@@ -70,12 +70,18 @@ Revisit your CO2 concentration time series from HW 4. If you want to switch grou
 
   - You should be creating a table that contains twelve models.
 ```{r p1}
+library(dplyr)
+library(TSA)
 BRW_flask<-tbl_df(read.table("BRW_flask.txt", header=T)) 
 
 BRW_flask <- filter(BRW_flask, year>=1972)
 
 BRW_flask <- BRW_flask %>% mutate(month = as.factor(month)) %>%
   mutate(year = as.vector(time(ts(BRW_flask$value,start=c(1972,1),freq=12))))
+
+BRW_flask <- ts(BRW_flask, start = c(1972, 1), freq = 12)
+
+harm1
 
 # Models 1-3
 
@@ -86,8 +92,8 @@ ym_lm3 <- lm(value ~ poly(year, 2), data = BRW_flask)
 # Models 4-6
 # no seasonal component is only a trend?
 ym_lm4 <- lm(value ~ month, data = BRW_flask) #seasonal means
-ym_lm5 <- lm(value ~ month, data = BRW_flask) #single harmonic pair (m = 1)
-ym_lm6 <- lm(value ~ poly(year, 2), data = BRW_flask) #5th order harmonic (m = 5)
+ym_lm5 <- lm(value ~ harmonic(BRW_flask, m = 1), data = BRW_flask) #single harmonic pair (m = 1)
+ym_lm6 <- lm(value ~ harmonic(BRW_flask, m = 5), data = BRW_flask) #5th order harmonic (m = 5)
 
 ```
 
