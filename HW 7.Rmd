@@ -28,6 +28,7 @@ library(ggplot2)
 library(effects)
 library(ggfortify)
 library(parallel)
+library(mgcv)
 
 panderOptions('missing', "-")
 
@@ -60,6 +61,8 @@ pander(fit.anova, ...)
 
 clust <- makeCluster(detectCores())
 
+# Set seeds for cores (runs will always be the same).
+clusterSetRNGStream(clust, 1800)
 
 ```
 
