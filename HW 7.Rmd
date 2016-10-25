@@ -92,17 +92,17 @@ ym_lm3 <- lm(value ~ poly(year, 2), data = BRW_flask)
 
 # Models 4-6
 # no seasonal component is only a trend?
-ym_lm4 <- lm(value ~ month, data = BRW_flask) #seasonal means
+ym_lm4 <- lm(value ~ as.factor(month), data = BRW_flask) #seasonal means
 ym_lm5 <- lm(value ~ harmonic(BRW_flask, m = 1), data = BRW_flask) 
 ym_lm6 <- lm(value ~ harmonic(BRW_flask, m = 5), data = BRW_flask) 
 
 ## Trend with seasonality
-ym_lm7 <- lm(value ~ year + month, data = BRW_flask)
+ym_lm7 <- lm(value ~ year + as.factor(month), data = BRW_flask)
 ym_lm8 <- lm(value ~ year + harmonic(BRW_flask, m = 1), data = BRW_flask)
 ym_lm9 <- lm(value ~ year + harmonic(BRW_flask, m = 5), data = BRW_flask)
 
 ## Quadratic trend with seasonality
-ym_lm10 <- lm(value ~ poly(year, 2) + month, data = BRW_flask)
+ym_lm10 <- lm(value ~ poly(year, 2) + as.factor(month), data = BRW_flask)
 ym_lm11 <- lm(value ~ poly(year, 2) + harmonic(BRW_flask, m = 1), 
              data = BRW_flask)
 ym_lm12 <- lm(value ~ poly(year, 2) + harmonic(BRW_flask, m = 5), 
@@ -110,10 +110,23 @@ ym_lm12 <- lm(value ~ poly(year, 2) + harmonic(BRW_flask, m = 5),
 
 DF <- AIC <- rep(NA, 12)
 for(i in 1:12){
-  DF[i] <- 527 - eval(as.name("summary(ym_lm", i, ")", sep = ""))$df
+  DF[i] <- 529 - summary(eval(as.name(paste("ym_lm", i, sep = ""))))$df[2]
   AIC[i] <- AIC(eval(as.name(paste("ym_lm", i, sep = ""))))
 }
 
+delta_AIC <- AIC - min(AIC)
+
+table <- cbind(t(t(DF)), t(t(AIC)), t(t(delta_AIC)))
+colnames(table) <- c("DF", "AIC", paste(expression(delta), "AIC"))
+row.names(table) <- c("Int Only", "Year Trend", "Quadratic Year Trend", 
+                      "Seasonal Means", "Single Harmonic", "5th Order Harmonic", 
+                      "Year w/ Seasonal Means", "Year w/ Single Harmonic", 
+                      "Year w/ 5th Order Harmonic", 
+                      "Quadratic w/ Seasonal Means", 
+                      "Quadratic w/ Single Harmonic", 
+                      "Quadratic w/ 5th Order Harmonic")
+
+pander(table)
 ```
 
 2) Now fit a `gam` from the `mgcv` package that includes a long-term trend based on a thin-plate spline with shrinkage that uses `k = #years, bs = "ts"` from the fractional year variable and a cyclic spline seasonal component. To build the cyclic spline component, use the numerically coded month variable that goes from 1 to 12 and `k = 12,bs = "cc"`. Fit the model, plot the long-term trend and the seasonal component (use `plot(gam_model)`), and discuss the estimated components, using both the plots and the EDF of each term.
