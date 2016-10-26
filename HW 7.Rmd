@@ -219,7 +219,7 @@ ma1_function <- function(x){
   return(decision)
 }
 
-clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA", "Year"))
+clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA"))
 
 t_ar_type_1 <- parApply(clust, ar_sim_data, 2, ar1_function)
 
