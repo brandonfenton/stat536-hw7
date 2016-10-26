@@ -139,8 +139,8 @@ In the table above, describing the fits of the 12 models considered, we see that
 
 ```{r p2}
 
-ym_gam <- gam(value ~ s(time(BRW_flask), k=43, bs="ts")
-                    + s(cycle(BRW_flask), k=12, bs="cc"), data=BRW_flask)
+ym_gam <- gam(value ~ s(time(BRW_flask), k = 43, bs = "ts")
+                    + s(cycle(BRW_flask), k = 12, bs = "cc"), data = BRW_flask)
 
 par(mfrow=c(1,2))
 plot(ym_gam)
@@ -167,18 +167,19 @@ lines(fitted(ym_gam) ~ as.vector(time(BRW_flask)), col="blue")
 
 ```{r p5}
 
-Bozeman<-read.csv("Bozeman.csv",header=T)
+Bozeman <- read.csv("Bozeman.csv", header = T)
 
-monthsF<-sort(unique(Bozeman$MonthRE))
-countfun<-function(x) c(sum(x<32),sum(!is.na(x)))
+monthsF <- sort(unique(Bozeman$MonthRE))
 
-  monthcountMINF<-aggregate(Bozeman$TMIN..F., 
-                            by=list(Bozeman$MonthRE),FUN=countfun)
+countfun <- function(x) c(sum(x < 32), sum(!is.na(x)))
+
+monthcountMINF <- aggregate(Bozeman$TMIN..F., 
+                            by = list(Bozeman$MonthRE), FUN = countfun)
   
-  yearcountMINF<-aggregate(Bozeman$TMIN..F.,
-                           by=list(Bozeman$Year),FUN=countfun)
+yearcountMINF <- aggregate(Bozeman$TMIN..F.,
+                           by = list(Bozeman$Year), FUN = countfun)
   
-  Data1 <- data.frame(Year = yearcountMINF[,1],
+Data1 <- data.frame(Year = yearcountMINF[,1],
                       DaysBelow32 = yearcountMINF$x[,1],
                       MeasuredDays = yearcountMINF$x[,2],
                       PropDays = yearcountMINF$x[,1]/yearcountMINF$x[,2])
@@ -188,21 +189,26 @@ sigma.est <- 0.03226855
 ar1.06.error <- (1 - 0.6^2)*sigma.est^2
 
 # it's a start but doesn't work yet
-ar_sim_data <- replicate(250, arima.sim(n = 109, model = list( ar = c(0.6)),
+ar_sim_data <- replicate(250, arima.sim(n = 109, model = list(ar = c(0.6)),
                                         sd = sqrt(ar1.06.error)))
 
 # Would probably be faster with one function, but this is more readable
 # Also, something 
+# works now
 ar1_function <- function(x){
-  p_value <- summary(gls(x ~ Year, data=Data1, correlation = corARMA(.5,p=1,q=0)))$tTable[8]
+  z <- data.frame(Year = Data1$Year, x)
+  p_value <- summary(gls(x ~ Year, data = z, 
+                         correlation = corAR1()))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
 
 ma1_function <- function(x){
-  formula <- as.formula("x ~ Year")
-  print(formula)
-  p_value <- summary(gls(x ~ Year, data=Data1, correlation = corARMA(.5, p=0,q=1)))$tTable[8]
+  z <- data.frame(Year = Data1$Year, x)
+  #formula <- as.formula("x ~ Year")
+  #print(formula)
+  p_value <- summary(gls(x ~ Year, data = z, 
+                         correlation = corARMA(p = 1, q = 1)))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
