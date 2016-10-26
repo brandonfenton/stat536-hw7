@@ -151,7 +151,9 @@ par(mfrow=c(1,1))
 
 3) Calculate the AIC of the GAM using the `AIC` function and discuss how that result compares to your AICs in #1. How is it similar or different in terms of information (degrees of freedom) used?
 
-The AIC for the GAM model is `r floor(AIC(ym_gam))`, which is lower than that for the quadratic model with a fifth-order harmonic by `r floor(AIC(ym_gam) - AIC(ym_lm12))`.  It also uses fewer degrees of freedom, with an edf of `r round(summary(ym_gam)$s.table[2,1], 2)` versus the 14 used by the quadratic with fifth-order harmonic model.  
+The AIC for the GAM model is `r floor(AIC(ym_gam))`, which is lower than that for the quadratic model with a fifth-order harmonic by `r floor(AIC(ym_lm12) - AIC(ym_gam))`.  
+
+TODO not sure about df for GAM. looking it up
 
 
 4) Compare the fitted values of your GAM to those from your top model, plotting the two models' results and the responses vs time on the same plot.
@@ -166,7 +168,7 @@ lines(fitted(ym_gam) ~ as.vector(time(BRW_flask)), col="blue")
 
 5) Revisit your simulation with an AR(1) from HW 6 \# 10. Consider fitting a model with autocorrelation in it using `gls` from the `nlme` package that accounts for an MA(1) error and another that accounts for an AR(1) error. Run your simulation code, extracting the p-values from the two model summaries and estimate the type I error rate in each situation and compare it to what you get from the regular linear model. 
 
-```{r p5}
+```{r p5, eval=F}
 
 Bozeman<-read.csv("Bozeman.csv",header=T)
 
@@ -188,12 +190,10 @@ countfun<-function(x) c(sum(x<32),sum(!is.na(x)))
 sigma.est <- 0.03226855
 ar1.06.error <- (1 - 0.6^2)*sigma.est^2
 
-# it's a start but doesn't work yet
 ar_sim_data <- replicate(250, arima.sim(n = 109, model = list( ar = c(0.6)),
                                         sd = sqrt(ar1.06.error)))
 
 # Would probably be faster with one function, but this is more readable
-# Also, something 
 
 Year <- Data1$Year
 
@@ -221,13 +221,14 @@ t_ar_type_1 <- parApply(clust, ar_sim_data, 2, ar1_function)
 
 t_ma_type_1 <- parApply(clust, ar_sim_data, 2, ma1_function)
 
-# Since the seed is set for the cores this time, this won't change between runs
-
+# Since the seed is set for the cores and the regular PRNG this time, the 
+# output won't change between runs. I checked.
 
 save(t_ar_type_1, t_ma_type_1, file="p5.Rdata")
 ```
 
 ```{r p5a}
+load("p5.Rdata")
 type_1s <- cbind(mean(t_ar_type_1), mean(t_ma_type_1))
 rownames(type_1s) <- "Type I Error"
 colnames(type_1s) <- cbind("AR(1)", "MA(1)")
