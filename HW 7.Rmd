@@ -196,11 +196,14 @@ ar_sim_data <- replicate(250, arima.sim(n = 109, model = list(ar = c(0.6)),
 
 # Would probably be faster with one function, but this is more readable
 
-# works now
+# Using corARMA with autoregressive order 1 and moving average order 0
+# for AR1, and vice-versa for MA1.  This way only one function needs to be 
+# passed via clusterExport.
+
 ar1_function <- function(x){
   z <- data.frame(Year = Data1$Year, x)
   p_value <- summary(gls(x ~ Year, data = z, 
-                         correlation = corAR1()))$tTable[8]
+                         correlation = corARMA(p=1, q=0)))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
@@ -208,13 +211,7 @@ ar1_function <- function(x){
 ma1_function <- function(x){
   z <- data.frame(Year = Data1$Year, x)
   p_value <- summary(gls(x ~ Year, data = z, 
-                         correlation = corARMA(p = 1, q = 1)))$tTable[8]
-  decision <- ifelse(p_value < 0.05, 1, 0)
-  return(decision)
-}
-
-t_function <- function(x){
-  p_value <- summary(lm(x ~ Data1$Year))$coef[2, 4]
+                         correlation = corARMA(p = 0, q = 1)))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
@@ -240,7 +237,6 @@ colnames(type_1s) <- cbind("AR(1)", "MA(1)")
 pander(type_1s)
 ```
 
-- In a `gls` model summary, the estimates, SEs, test statistics, and p-values are contained in the `tTable` part of the summary. It has a similar layout to `coef` that we pulled the [2,4] element from to get the p-value from `lm`.
 
 ## Some derivation practice (these can be handwritten). If you have not completed STAT 421 or equivalent, please try the problem and then take advantage of advanced help by stopping by to chat about your answer. 
 
