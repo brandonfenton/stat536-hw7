@@ -191,12 +191,7 @@ Data1 <- data.frame(Year = yearcountMINF[,1],
 sigma.est <- 0.03226855
 ar1.06.error <- (1 - 0.6^2)*sigma.est^2
 
-<<<<<<< HEAD
-ar_sim_data <- replicate(250, arima.sim(n = 109, model = list( ar = c(0.6)),
-=======
-# it's a start but doesn't work yet
 ar_sim_data <- replicate(250, arima.sim(n = 109, model = list(ar = c(0.6)),
->>>>>>> 452712b69c49c64667ed2e0d234bd9f37a3111a2
                                         sd = sqrt(ar1.06.error)))
 
 # Would probably be faster with one function, but this is more readable
@@ -212,8 +207,6 @@ ar1_function <- function(x){
 
 ma1_function <- function(x){
   z <- data.frame(Year = Data1$Year, x)
-  #formula <- as.formula("x ~ Year")
-  #print(formula)
   p_value <- summary(gls(x ~ Year, data = z, 
                          correlation = corARMA(p = 1, q = 1)))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
