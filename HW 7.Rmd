@@ -132,7 +132,7 @@ row.names(table) <- c("Int Only", "Year Trend", "Quadratic Year Trend",
 
 
 
-pander(table)
+table[order(table[, 2]), ]
 ```
 
 In the table above, describing the fits of the 12 models considered, we see that the model including a quadratic for time, as well as a $5^{th}$ order harmonic fits "the best" according to AIC, however the AIC for the quadratic model with seasonal means is a difference of less than 2 from this "top model". There is strong evidence of the need for a quadratic trend component, as the quadratic models substantially outperform the linear trend models, according to AIC units. As for the seasonal component, there is no evidence of a difference between a model including seasonal means verses a $5^{th}$ order harmonic (after accounting for the quadratic trend). The model including a $5^{th}$ order harmonic does "fit better", but the interpretation of this model is far more challenging than a model which incorporates seasonal means. Therefore, in the interest of parsimony, from this model suite, the quadratic trend model with seasonal means should be chosen.   
@@ -141,8 +141,8 @@ In the table above, describing the fits of the 12 models considered, we see that
 
 ```{r p2}
 
-ym_gam <- gam(value ~ s(time(BRW_flask), k=43, bs="ts")
-                    + s(cycle(BRW_flask), k=12, bs="cc"), data=BRW_flask)
+ym_gam <- gam(value ~ s(time(BRW_flask), k = 43, bs = "ts")
+                    + s(cycle(BRW_flask), k = 12, bs = "cc"), data = BRW_flask)
 
 par(mfrow=c(1,2))
 plot(ym_gam)
@@ -170,18 +170,19 @@ lines(fitted(ym_gam) ~ as.vector(time(BRW_flask)), col="blue")
 
 ```{r p5, eval=F}
 
-Bozeman<-read.csv("Bozeman.csv",header=T)
+Bozeman <- read.csv("Bozeman.csv", header = T)
 
-monthsF<-sort(unique(Bozeman$MonthRE))
-countfun<-function(x) c(sum(x<32),sum(!is.na(x)))
+monthsF <- sort(unique(Bozeman$MonthRE))
 
-  monthcountMINF<-aggregate(Bozeman$TMIN..F., 
-                            by=list(Bozeman$MonthRE),FUN=countfun)
+countfun <- function(x) c(sum(x < 32), sum(!is.na(x)))
+
+monthcountMINF <- aggregate(Bozeman$TMIN..F., 
+                            by = list(Bozeman$MonthRE), FUN = countfun)
   
-  yearcountMINF<-aggregate(Bozeman$TMIN..F.,
-                           by=list(Bozeman$Year),FUN=countfun)
+yearcountMINF <- aggregate(Bozeman$TMIN..F.,
+                           by = list(Bozeman$Year), FUN = countfun)
   
-  Data1 <- data.frame(Year = yearcountMINF[,1],
+Data1 <- data.frame(Year = yearcountMINF[,1],
                       DaysBelow32 = yearcountMINF$x[,1],
                       MeasuredDays = yearcountMINF$x[,2],
                       PropDays = yearcountMINF$x[,1]/yearcountMINF$x[,2])
@@ -190,21 +191,31 @@ countfun<-function(x) c(sum(x<32),sum(!is.na(x)))
 sigma.est <- 0.03226855
 ar1.06.error <- (1 - 0.6^2)*sigma.est^2
 
+<<<<<<< HEAD
 ar_sim_data <- replicate(250, arima.sim(n = 109, model = list( ar = c(0.6)),
+=======
+# it's a start but doesn't work yet
+ar_sim_data <- replicate(250, arima.sim(n = 109, model = list(ar = c(0.6)),
+>>>>>>> 452712b69c49c64667ed2e0d234bd9f37a3111a2
                                         sd = sqrt(ar1.06.error)))
 
 # Would probably be faster with one function, but this is more readable
 
-Year <- Data1$Year
-
+# works now
 ar1_function <- function(x){
-  p_value <- summary(gls(x ~ Year, correlation = corARMA(.5,p=1,q=0)))$tTable[8]
+  z <- data.frame(Year = Data1$Year, x)
+  p_value <- summary(gls(x ~ Year, data = z, 
+                         correlation = corAR1()))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
 
 ma1_function <- function(x){
-  p_value <- summary(gls(x ~ Year, correlation = corARMA(.5, p=0,q=1)))$tTable[8]
+  z <- data.frame(Year = Data1$Year, x)
+  #formula <- as.formula("x ~ Year")
+  #print(formula)
+  p_value <- summary(gls(x ~ Year, data = z, 
+                         correlation = corARMA(p = 1, q = 1)))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
