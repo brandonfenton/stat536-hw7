@@ -193,16 +193,17 @@ ar_sim_data <- replicate(250, arima.sim(n = 109, model = list( ar = c(0.6)),
 
 # Would probably be faster with one function, but this is more readable
 # Also, something 
+
+Year <- Data1$Year
+
 ar1_function <- function(x){
-  p_value <- summary(gls(x ~ Year, data=Data1, correlation = corARMA(.5,p=1,q=0)))$tTable[8]
+  p_value <- summary(gls(x ~ Year, correlation = corARMA(.5,p=1,q=0)))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
 
 ma1_function <- function(x){
-  formula <- as.formula("x ~ Year")
-  print(formula)
-  p_value <- summary(gls(x ~ Year, data=Data1, correlation = corARMA(.5, p=0,q=1)))$tTable[8]
+  p_value <- summary(gls(x ~ Year, correlation = corARMA(.5, p=0,q=1)))$tTable[8]
   decision <- ifelse(p_value < 0.05, 1, 0)
   return(decision)
 }
@@ -213,7 +214,7 @@ t_function <- function(x){
   return(decision)
 }
 
-clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA", "p_value"))
+clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA", "p_value","Year"))
 
 t_ar_type_1 <- parApply(clust, ar_sim_data, 2, ar1_function)
 
