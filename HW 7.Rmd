@@ -128,7 +128,7 @@ row.names(table) <- c("Int Only", "Year Trend", "Quadratic Year Trend",
 
 
 
-pander(table)
+table[order(table[, 2]), ]
 ```
 
 In the table above, describing the fits of the 12 models considered, we see that the model including a quadratic for time, as well as a $5^{th}$ order harmonic fits "the best" according to AIC, however the AIC for the quadratic model with seasonal means is a difference of less than 2 from this "top model". There is strong evidence of the need for a quadratic trend component, as the quadratic models substantially outperform the linear trend models, according to AIC units. As for the seasonal component, there is no evidence of a difference between a model including seasonal means verses a $5^{th}$ order harmonic (after accounting for the quadratic trend). The model including a $5^{th}$ order harmonic does "fit better", but the interpretation of this model is far more challenging than a model which incorporates seasonal means. Therefore, in the interest of parsimony, from this model suite, the quadratic trend model with seasonal means should be chosen.   
