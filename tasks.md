@@ -1,7 +1,7 @@
 Tasks broken down by problem for HW7
 ======================================
 ## Problem 1:
-* I think Allison did or mostly did this
+- [] I think Allison did or mostly did this
 
 ## Problem 2:
 * fit a `gam` from the `mgcv` package that includes a long-term trend based on a thin-plate spline with shrinkage that uses `k = #years, bs = "ts"` from the fractional year variable and a cyclic spline seasonal component
