@@ -3,6 +3,8 @@ Tasks broken down by problem for HW7
 ## Problem 1:
 - [] I think Allison did or mostly did this
 
+DONE!
+
 ## Problem 2:
 * fit a `gam` from the `mgcv` package that includes a long-term trend based on a thin-plate spline with shrinkage that uses `k = #years, bs = "ts"` from the fractional year variable and a cyclic spline seasonal component
 * fit the model
@@ -28,4 +30,4 @@ Tasks broken down by problem for HW7
 ## Problem 7:
 * Use the rules for means and variances of linear combinations to find $E(y_t)$, $Var(y_t)$, and $Cov(y_t,y_{t-1})$. Do not worry about what happens at the edges of the time series (for t=1 or t=n), only worry about $t$ in general. 
 
-## Problem 7:
+DONE!
