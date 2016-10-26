@@ -194,6 +194,7 @@ ar_sim_data <- replicate(250, arima.sim(n = 109, model = list(ar = c(0.6)),
 
 # Would probably be faster with one function, but this is more readable
 # Also, something 
+
 # works now
 ar1_function <- function(x){
   z <- data.frame(Year = Data1$Year, x)
@@ -219,7 +220,7 @@ t_function <- function(x){
   return(decision)
 }
 
-clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA", "p_value"))
+clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA", "p_value","Year"))
 
 t_ar_type_1 <- parApply(clust, ar_sim_data, 2, ar1_function)
 
