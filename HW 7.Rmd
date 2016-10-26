@@ -197,7 +197,7 @@ ar_sim_data <- replicate(250, arima.sim(n = 109, model = list(ar = c(0.6)),
 # Would probably be faster with one function, but this is more readable
 
 # Using corARMA with autoregressive order 1 and moving average order 0
-# for AR1, and vice-versa for MA1.  This way only one function needs to be 
+# for AR(1), and vice-versa for MA1.  This way only one function needs to be 
 # passed via clusterExport.
 
 ar1_function <- function(x){
