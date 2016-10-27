@@ -219,7 +219,7 @@ ma1_function <- function(x){
   return(decision)
 }
 
-clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA"))
+clusterExport(clust, c("Data1", "gls", "corARMA"))
 
 t_ar_type_1 <- parApply(clust, ar_sim_data, 2, ar1_function)
 
@@ -276,4 +276,33 @@ Then, the autocorrelation function is:
 
 7) Suppose that we are interested in the properties of a local average (linear filter) of two observations from an original time series, $x_t$. The new series is $y_t=(0.5)*(x_{t-1}+x_t)$. The mean of $x_t$ is 3, the variance of $x_t$ is 4, and the correlation between any neighboring $x_t$'s is 0.5 (so $cor(x_t, x_{t-1})=0.5$). $x_t$'s more than two time points apart are uncorrelated (correlation is 0). Use the rules for means and variances of linear combinations to find $E(y_t)$, $Var(y_t)$, and $Cov(y_t,y_{t-1})$. Do not worry about what happens at the edges of the time series (for t=1 or t=n), only worry about $t$ in general. 
 
-  - Note that you have some preliminary work to complete to go from the provided information to what you need to work on the three derivations requested.
+  - Note that you have some preliminary work to complete to go from the provided information to what you need to work on the three derivations requested.  
+  
+
+The expected value of the new series, $Y_t,$ is:
+\begin{align*}
+E[Y_t] &= E[\frac{x_{t-1} + x_t}{2}] \\
+&= \frac{1}{2} E[x_{t-1} + x_t] \\
+&= \frac{1}{2} E[x_{t-1}] + E[x_t] \\
+&= \frac{1}{2} (2*3) \\
+&= 3
+\end{align*}
+
+The variance of the new series, $Y_t,$ is:
+\begin{align*}
+Var[Y_t] &= Var[\frac{x_{t-1} + x_t}{2}] \\
+&= \frac{1}{4} Var[x_{t-1} + x_t] \\
+&= \frac{1}{4} Var[x_{t-1}] + Var[x_t] + 2cov[x_{t-1}, x_t] \\
+&= \frac{1}{4} (4 + 4 + 2*0.5) \\
+&= \frac{9}{4}
+\end{align*}
+
+The covariance of the new series, $Y_t,$ is:
+\begin{align*}
+cov[Y_t, Y_{t-1}] &= cov[\frac{x_{t-1} + x_{t}}{2}, \frac{x_{t-2} + x_{t-1}}{2}] \\
+&= cov[\frac{x_{t-1}}{2}, \frac{x_{t-2}}{2}] + cov[\frac{x_{t-1}}{2}, \frac{x_{t-1}}{2}] + cov[\frac{x_{t-2}}{2}, \frac{x_t}{2}] + cov[\frac{x_t}{2}, \frac{x_{t-1}}{2}] \\
+&= \frac{1}{4}cov[x_{t-1}, x_{t-2}] + \frac{1}{4}cov[x_{t-1}, x_{t-1}] + \frac{1}{4}cov[x_{t-2}, x_{t}] + \frac{1}{4}cov[x_{t}, x_{t-1}] \\
+&= \frac{1}{4} (0.5 + var[x_{t-1}] + 0 + 0.5) \\
+&= \frac{1}{4} (1 + 4) \\
+&= \frac{5}{4}
+\end{align*}
