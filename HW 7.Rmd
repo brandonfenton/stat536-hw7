@@ -30,7 +30,6 @@ library(ggfortify)
 library(parallel)
 library(mgcv)
 library(nlme)
-library(mosaic)
 
 panderOptions('missing', "-")
 
