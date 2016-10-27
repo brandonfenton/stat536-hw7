@@ -30,7 +30,6 @@ library(ggfortify)
 library(parallel)
 library(mgcv)
 library(nlme)
-library(mosaic)
 
 panderOptions('missing', "-")
 
@@ -219,7 +218,7 @@ ma1_function <- function(x){
   return(decision)
 }
 
-clusterExport(clust, c("Data1", "shuffle", "gls", "corARMA"))
+clusterExport(clust, c("Data1", "gls", "corARMA"))
 
 t_ar_type_1 <- parApply(clust, ar_sim_data, 2, ar1_function)
 
